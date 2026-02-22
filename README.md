@@ -22,6 +22,8 @@ Recommended runtime layout:
 
 See `configs/config.example.yaml`.
 
+For Mongo auth/connection, set `mongo.uri` to a full URI (for example `mongodb://user:pass@localhost:27017/db?authSource=admin`).
+
 ## Commands
 
 ```bash

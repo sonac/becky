@@ -13,7 +13,7 @@ type Config struct {
 type MongoConfig struct {
 	Container string   `yaml:"container"`
 	Mongodump string   `yaml:"mongodump_path"`
-	URIEnvVar string   `yaml:"uri_env_var"`
+	URI       string   `yaml:"uri"`
 	AuthDB    string   `yaml:"auth_db"`
 	ExtraArgs []string `yaml:"extra_args"`
 }

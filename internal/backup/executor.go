@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/sonac/becky/internal/config"
@@ -53,10 +54,10 @@ func (e Executor) Run(ctx context.Context, cfg config.Config, entry metadata.Ent
 	if cfg.Backup.IncludeOplog {
 		args = append(args, "--oplog")
 	}
-	if cfg.Mongo.URIEnvVar != "" {
-		if uri := os.Getenv(cfg.Mongo.URIEnvVar); uri != "" {
-			args = append(args, "--uri", uri)
-		}
+
+	uri := strings.TrimSpace(cfg.Mongo.URI)
+	if uri != "" {
+		args = append(args, "--uri", uri)
 	}
 	if cfg.Mongo.AuthDB != "" {
 		args = append(args, "--authenticationDatabase", cfg.Mongo.AuthDB)

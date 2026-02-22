@@ -93,7 +93,7 @@ func cmdInit(args []string) int {
 mongo:
   container: "mongo"
   mongodump_path: "mongodump"
-  uri_env_var: "MONGO_URI"
+  uri: ""
   auth_db: "admin"
   extra_args: []
 
