@@ -6,20 +6,15 @@ BIN_NAME="mongo-backup"
 ASSET="mongo-backup_linux_amd64.tar.gz"
 SUMS="sha256sums.txt"
 BIN_DIR="/usr/local/bin"
-VERSION=""
 
 usage() {
   cat <<EOF
-Usage: install.sh [--version vX.Y.Z] [--bin-dir /usr/local/bin]
+Usage: install.sh [--bin-dir /usr/local/bin]
 EOF
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --version)
-      VERSION="$2"
-      shift 2
-      ;;
     --bin-dir)
       BIN_DIR="$2"
       shift 2
@@ -36,12 +31,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$VERSION" ]]; then
-  VERSION="$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" | awk -F '"' '/tag_name/{print $4; exit}')"
-fi
+VERSION="$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" | awk -F '"' '/tag_name/{print $4; exit}')"
 
 if [[ -z "$VERSION" ]]; then
-  echo "Unable to resolve release version" >&2
+  echo "Unable to resolve latest release version" >&2
   exit 1
 fi
 

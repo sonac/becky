@@ -42,7 +42,7 @@ mongo-backup version
 ## Install from GitHub Release
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sonac/becky/main/scripts/install.sh | bash -s -- --version v0.1.0
+curl -fsSL https://raw.githubusercontent.com/sonac/becky/main/scripts/install.sh | bash
 ```
 
 The installer:
