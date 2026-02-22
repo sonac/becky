@@ -2,6 +2,8 @@ name: Release
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
 
@@ -9,7 +11,47 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  release-main:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build linux amd64
+        env:
+          CGO_ENABLED: 0
+          GOOS: linux
+          GOARCH: amd64
+        run: |
+          mkdir -p dist/package
+          go build -ldflags "-s -w -X main.version=main-${GITHUB_SHA::7} -X main.commit=${GITHUB_SHA} -X main.date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" -o dist/package/mongo-backup ./cmd/mongo-backup
+          cp configs/config.example.yaml dist/package/config.example.yaml
+          cp deploy/mongo-backup.service dist/package/mongo-backup.service
+          tar -C dist/package -czf dist/mongo-backup_linux_amd64.tar.gz mongo-backup config.example.yaml mongo-backup.service
+
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum mongo-backup_linux_amd64.tar.gz > sha256sums.txt
+
+      - name: Create commit release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: main-${{ github.sha }}
+          name: main-${{ github.sha }}
+          target_commitish: main
+          files: |
+            dist/mongo-backup_linux_amd64.tar.gz
+            dist/sha256sums.txt
+
+  release-tag:
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
