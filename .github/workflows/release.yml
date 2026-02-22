@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build linux amd64
+        env:
+          CGO_ENABLED: 0
+          GOOS: linux
+          GOARCH: amd64
+        run: |
+          mkdir -p dist/package
+          go build -ldflags "-s -w -X main.version=${GITHUB_REF_NAME} -X main.commit=${GITHUB_SHA} -X main.date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" -o dist/package/mongo-backup ./cmd/mongo-backup
+          cp configs/config.example.yaml dist/package/config.example.yaml
+          cp deploy/mongo-backup.service dist/package/mongo-backup.service
+          tar -C dist/package -czf dist/mongo-backup_linux_amd64.tar.gz mongo-backup config.example.yaml mongo-backup.service
+
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum mongo-backup_linux_amd64.tar.gz > sha256sums.txt
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/mongo-backup_linux_amd64.tar.gz
+            dist/sha256sums.txt

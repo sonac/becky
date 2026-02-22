@@ -1,0 +1,32 @@
+version: 1
+
+mongo:
+  container: "mongo"
+  mongodump_path: "mongodump"
+  uri_env_var: "MONGO_URI"
+  auth_db: "admin"
+  extra_args: []
+
+schedule:
+  timezone: "UTC"
+  daily_cron: "0 2 * * *"
+  weekly_cron: "0 3 * * 0"
+
+backup:
+  output_dir: "/home/username/.becky/storage/backups"
+  temp_dir: "/home/username/.becky/storage/tmp"
+  timeout_seconds: 3600
+  include_oplog: true
+
+retention:
+  daily_keep: 10
+  weekly_keep: 10
+  max_age_days: 0
+
+metadata:
+  state_file: "/home/username/.becky/storage/backups.json"
+  sidecar_per_backup: true
+
+logging:
+  level: "info"
+  format: "json"

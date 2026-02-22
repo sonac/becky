@@ -1,0 +1,19 @@
+[Unit]
+Description=Mongo backup scheduler
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{USER}}
+Group={{GROUP}}
+Environment=HOME=/home/{{USER}}
+WorkingDirectory=/home/{{USER}}
+ExecStart=/usr/local/bin/mongo-backup run --config /home/{{USER}}/.becky/config.yaml
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
